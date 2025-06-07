@@ -210,4 +210,4 @@ def test_care(test_cases, labels, model, batch_size):
 	print(f"Label1 auc: {auc_label1:.4f}")
 	print(f"Label1 ap: {ap_label1:.4f}")
 
-	return auc_gnn, auc_label1, recall_gnn, recall_label1
+	return auc_gnn, auc_label1, recall_gnn / test_batch_num, recall_label1 / test_batch_num
