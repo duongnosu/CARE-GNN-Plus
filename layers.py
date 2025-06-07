@@ -1,3 +1,17 @@
+# =========================================================================
+# CARE-GNN Layers Module
+# =========================================================================
+# Purpose: Implement the core neural network layers for CARE-GNN
+# Paper: "Enhancing Graph Neural Network-based Fraud Detectors against Camouflaged Fraudsters"
+# Source: https://github.com/YingtongDou/CARE-GNN
+#
+# Key Components:
+# 1. InterAgg: Inter-relation aggregator (combines multiple relations)
+# 2. IntraAgg: Intra-relation aggregator (processes single relation)
+# 3. RLModule: Reinforcement learning for adaptive neighbor selection
+# 4. Various aggregation functions (Attention, Weight, Mean, GNN)
+# =========================================================================
+
 import torch
 import torch.nn as nn
 from torch.nn import init
@@ -12,10 +26,29 @@ import math
 	CARE-GNN Layers
 	Paper: Enhancing Graph Neural Network-based Fraud Detectors against Camouflaged Fraudsters
 	Source: https://github.com/YingtongDou/CARE-GNN
+
+	This module implements the core aggregation mechanisms that handle:
+	- Multi-relation graph neural networks
+	- Adaptive neighbor filtering using reinforcement learning
+	- Label-aware similarity measures for fraud detection
+	- Camouflage-resistant aggregation strategies
 """
 
 
 class InterAgg(nn.Module):
+	"""
+	Inter-Relation Aggregator
+	
+	Purpose: Aggregate information from multiple relations (UPU, USU, UVU)
+	Key Innovation: Uses reinforcement learning to adaptively filter neighbors
+	
+	Process Flow:
+	1. Extract neighbors for each relation
+	2. Compute label-aware similarity scores  
+	3. Filter neighbors using adaptive thresholds
+	4. Aggregate within each relation (intra-aggregation)
+	5. Combine across relations (inter-aggregation)
+	"""
 
 	def __init__(self, features, feature_dim,
 				 embed_dim, adj_lists, intraggs,
@@ -33,8 +66,8 @@ class InterAgg(nn.Module):
 		"""
 		super(InterAgg, self).__init__()
 
-		self.features = features
-		self.dropout = 0.6
+		self.features = features #Node feature emeddings
+		self.dropout = 0.6 
 		self.adj_lists = adj_lists
 		self.intra_agg1 = intraggs[0]
 		self.intra_agg2 = intraggs[1]
@@ -43,7 +76,9 @@ class InterAgg(nn.Module):
 		self.feat_dim = feature_dim
 		self.inter = inter
 		self.step_size = step_size
-		self.cuda = cuda
+		self.cuda = cuda #GPU flag
+
+		# Set CUDAfor intra-aggregators
 		self.intra_agg1.cuda = cuda
 		self.intra_agg2.cuda = cuda
 		self.intra_agg3.cuda = cuda
